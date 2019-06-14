@@ -1,0 +1,26 @@
+kind: DaemonSet
+apiVersion: extensions/v1beta1
+metadata:
+  name: ssd-startup-script
+  labels:
+    app: ssd-startup-script
+spec:
+  template:
+    metadata:
+      labels:
+        app: ssd-startup-script
+    spec:
+      hostPID: true
+      containers:
+      - name: ssd-startup-script
+        image: gcr.io/google-containers/startup-script:v1
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        env:
+        - name: STARTUP_SCRIPT
+          value: |
+            #!/bin/bash
+            echo "10.3.250.180 staging-guestbook.mstakx.io" >> /etc/hosts
+            echo "10.3.248.93 guestbook.mstakx.io" >> /etc/hosts
+            echo Done
