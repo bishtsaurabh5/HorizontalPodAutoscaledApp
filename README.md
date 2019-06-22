@@ -5,6 +5,7 @@ This repository autoscales guestbook app using nginx ingress controller on GKE
 1) Install [terraform](https://www.terraform.io/downloads.html).
 2) Install [gcloud](https://cloud.google.com/sdk/install) SDK.
 3) Install [jq](https://stedolan.github.io/jq/download/) which is a command line JSON processor.
+4) Enable the [GKE api](https://console.developers.google.com/apis/api/container.googleapis.com/overview)
 
 ## Usage
 1) Make a separate service account from your gcloud console for terraform with admin privileges and download the credentials as a json file.
