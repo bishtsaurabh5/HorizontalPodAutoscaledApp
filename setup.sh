@@ -1,5 +1,5 @@
 #!/bin/bash
-#loadBalancerip=""
+
 echo "Remember this script is a stateful script ..which means that you need to provision cluster everytime you run ...since it does not store ip of loadbalancer"
 echo "You are free to tweak this script as per your needs :)"
 staging_hostname="staging-guestbook.mstakx.io"
@@ -40,19 +40,15 @@ helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true --
 sleep 60s
 echo "wait sometime so that loadbalancer is allocated ip"
 
-#while [ "$(kubectl get svc nginx-ingress-controller -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')" != "" ]
-#do
-#  echo "fetching ip"
-#done
-
 frontendstagingip=$(kubectl -n staging get svc frontend -o=jsonpath='{.spec.clusterIP}')
 frontendproductionip=$(kubectl -n production get svc frontend -o=jsonpath='{.spec.clusterIP}')
 
 sed -e "s/\${frontendstagingip}/$frontendstagingip/" -e "s/\${frontendproductionip}/$frontendproductionip/" DaemonSetForHost/DaemonSet.yaml | tee ds.yaml
 
 kubectl apply -f ds.yaml
-kubectl apply -f /home/esaurbi/HorizontalPodAutoscaledApp-master/ingress/production-ingress.yaml
-kubectl apply -f /home/esaurbi/HorizontalPodAutoscaledApp-master/ingress/staging-ingress.yaml
+kubectl apply -f ingress/production-ingress.yaml
+kubectl apply -f ingress/staging-ingress.yaml
+rm -rf ds.yaml
 
 loadBalancerip=$(kubectl get svc nginx-ingress-controller -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo $loadBalancerip
@@ -72,7 +68,8 @@ setupLoadConfig()
   sed -e "s/\${load-balancer-ip}/$loadBalancerip/" -e "s/\${hostname}/$production_hostname/" -e "s/\${namespace}/production/" load-generator-deployment/load-generator-spec.yaml | tee load-generator-production.yaml
  kubectl apply -f load-generator-staging.yaml
  kubectl apply -f load-generator-production.yaml
-  
+ rm -rf load-generator-staging.yaml
+ rm -rf load-generator-production.yaml
 }
 
 increaseLoad()
@@ -148,13 +145,6 @@ case $opt in
 esac
 done
 }
-
-#provisionCluster
-#deployApplication
-#setupIngressControllerAndRouting
-#setupAutoscaler
-#checkNamespace
-#printns
 
 while true
 do
