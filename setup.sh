@@ -68,8 +68,6 @@ setupLoadConfig()
   sed -e "s/\${load-balancer-ip}/$loadBalancerip/" -e "s/\${hostname}/$production_hostname/" -e "s/\${namespace}/production/" load-generator-deployment/load-generator-spec.yaml | tee load-generator-production.yaml
  kubectl apply -f load-generator-staging.yaml
  kubectl apply -f load-generator-production.yaml
- rm -rf load-generator-staging.yaml
- rm -rf load-generator-production.yaml
 }
 
 increaseLoad()
