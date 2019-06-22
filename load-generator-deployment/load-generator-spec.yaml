@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator-deployment-${namespace}
+  namespace: ${namespace}
+  labels:
+    app: load-generator-deployment-${namespace}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-generator-deployment-${namespace}
+  template:
+    metadata:
+      labels:
+        app: load-generator-deployment-${namespace}
+    spec:
+      hostAliases:
+      - ip: "${load-balancer-ip}"
+        hostnames:
+        - "${hostname}"
+      containers:
+      - name: load-generator
+        image: ubuntu:xenial
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh","-c"]
+        args: ["apt-get update && apt-get install -y curl && curl -L https://goo.gl/S1Dc3R | bash -s 2500 'http://${hostname}' && sleep 5m"]

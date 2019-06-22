@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator-deployment
+  namespace: staging
+  labels:
+    app: load-generator-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-generator-deployment
+  template:
+    metadata:
+      labels:
+        app: load-generator-deployment
+    spec:
+      hostAliases:
+      - ip: "34.83.233.82"
+        hostnames:
+        - "staging-guestbook.mstakx.io"
+      containers:
+      - name: load-generator
+        image: ubuntu:xenial
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh","-c"]
+        args: ["apt-get update && apt-get install -y curl &&  apt-get install -y parallel && $( seq 5000 | parallel -j2000 curl -s http://staging-guestbook.mstakx.io ) && sleep 5m"]

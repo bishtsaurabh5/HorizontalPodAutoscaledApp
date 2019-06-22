@@ -22,5 +22,5 @@ spec:
           value: |
             #!/bin/bash
             echo "${frontendstagingip} staging-guestbook.mstakx.io" >> /etc/hosts
-            echo "${frontendproductionip} guestbook.mstakx.io" >> /etc/hosts
+            echo "$frontendproductionip} guestbook.mstakx.io" >> /etc/hosts
             echo Done
